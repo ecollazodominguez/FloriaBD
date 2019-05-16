@@ -171,7 +171,7 @@
                 </Property>
               </Properties>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_allCodePost" type="java.lang.String" value="this.actualizarTabla();"/>
+                <AuxValue name="JavaCodeGenerator_allCodePost" type="java.lang.String" value="DefaultTableModel model = (DefaultTableModel) jTable2.getModel();&#xa;model.setRowCount(0);&#xa;model.addRow(metodos.actualizarTabla());&#xa;"/>
               </AuxValues>
             </Component>
           </SubComponents>

@@ -5,6 +5,7 @@
  */
 package floriabd;
 
+import AccesoBD.metodos;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -86,7 +87,9 @@ public class BaseDatos extends javax.swing.JFrame {
             }
         ));
         jScrollPane2.setViewportView(jTable2);
-        this.actualizarTabla();
+        DefaultTableModel model = (DefaultTableModel) jTable2.getModel();
+        model.setRowCount(0);
+        model.addRow(metodos.actualizarTabla());
 
         jTextField1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -185,123 +188,69 @@ public class BaseDatos extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextField1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        //Sintaxis del insert
-        String sql = "INSERT INTO PLANTAS(codigo,nombre,exposicion) VALUES(?,?,?)";
-
-        //conectamos a la BD
-        try (Connection conn = this.connect();
-                PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            //añadimos al statement los valores por orden
-            pstmt.setInt(1, Integer.valueOf(jTextField1.getText()));
-            pstmt.setString(2, jTextField2.getText());
-            pstmt.setString(3, jTextField3.getText());
-            pstmt.executeUpdate();
-            JOptionPane.showMessageDialog(null, "Linea añadida");
-            this.actualizarTabla();
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
+//        //Sintaxis del insert
+//        String sql = "INSERT INTO PLANTAS(codigo,nombre,exposicion) VALUES(?,?,?)";
+//
+//        //conectamos a la BD
+//        try (Connection conn = this.connect();
+//                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+//            //añadimos al statement los valores por orden
+//            pstmt.setInt(1, Integer.valueOf(jTextField1.getText()));
+//            pstmt.setString(2, jTextField2.getText());
+//            pstmt.setString(3, jTextField3.getText());
+//            pstmt.executeUpdate();
+//            JOptionPane.showMessageDialog(null, "Linea añadida");
+//            this.actualizarTabla();
+//        } catch (SQLException e) {
+//            System.out.println(e.getMessage());
+//        }
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-
-        if (jTextField1.getText() != null) {
-            String sql = "DELETE FROM plantas WHERE codigo = ?";
-
-            try (Connection conn = this.connect();
-                    PreparedStatement pstmt = conn.prepareStatement(sql)) {
-                pstmt.setString(1, jTextField1.getText());
-                pstmt.executeUpdate();
-                JOptionPane.showMessageDialog(null, "Linea borrada");
-                this.actualizarTabla();
-            } catch (SQLException e) {
-                System.out.println(e.getMessage());
-            }
-        } else if (jTextField2.getText() != null) {
-            String sql = "DELETE FROM plantas WHERE nombre = ?";
-
-            try (Connection conn = this.connect();
-                    PreparedStatement pstmt = conn.prepareStatement(sql)) {
-                pstmt.setString(2, jTextField2.getText());
-                pstmt.executeUpdate();
-                JOptionPane.showMessageDialog(null, "Linea borrada");
-                this.actualizarTabla();
-
-            } catch (SQLException e) {
-                System.out.println(e.getMessage());
-            }
-        }
+//
+//        if (jTextField1.getText() != null) {
+//            String sql = "DELETE FROM plantas WHERE codigo = ?";
+//
+//            try (Connection conn = this.connect();
+//                    PreparedStatement pstmt = conn.prepareStatement(sql)) {
+//                pstmt.setString(1, jTextField1.getText());
+//                pstmt.executeUpdate();
+//                JOptionPane.showMessageDialog(null, "Linea borrada");
+//                this.actualizarTabla();
+//            } catch (SQLException e) {
+//                System.out.println(e.getMessage());
+//            }
+//        } else if (jTextField2.getText() != null) {
+//            String sql = "DELETE FROM plantas WHERE nombre = ?";
+//
+//            try (Connection conn = this.connect();
+//                    PreparedStatement pstmt = conn.prepareStatement(sql)) {
+//                pstmt.setString(2, jTextField2.getText());
+//                pstmt.executeUpdate();
+//                JOptionPane.showMessageDialog(null, "Linea borrada");
+//                this.actualizarTabla();
+//
+//            } catch (SQLException e) {
+//                System.out.println(e.getMessage());
+//            }
+//        }
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        if (jTextField1.getText() != null && jTextField2.getText() != null) {
-            sql = "SELECT codigo, nombre, exposicion FROM plantas WHERE codigo = ? and nombre = ?";
-            this.consultas(jTextField1, jTextField2);
-            
-        }else if((jTextField1.getText() != null && jTextField3.getText() != null)){
-            sql = "SELECT codigo, nombre, exposicion FROM plantas WHERE codigo = ? and exposicion = ?";
-            this.consultas(jTextField1, jTextField3);
-        }else if((jTextField2.getText() != null && jTextField3.getText() != null)){
-            sql = "SELECT codigo, nombre, exposicion FROM plantas WHERE codigo = ? and exposicion = ?";
-            this.consultas(jTextField2, jTextField3);
-        }
+//        if (jTextField1.getText() != null && jTextField2.getText() != null) {
+//            sql = "SELECT codigo, nombre, exposicion FROM plantas WHERE codigo = ? and nombre = ?";
+//            this.consultas(jTextField1, jTextField2);
+//            
+//        }else if((jTextField1.getText() != null && jTextField3.getText() != null)){
+//            sql = "SELECT codigo, nombre, exposicion FROM plantas WHERE codigo = ? and exposicion = ?";
+//            this.consultas(jTextField1, jTextField3);
+//        }else if((jTextField2.getText() != null && jTextField3.getText() != null)){
+//            sql = "SELECT codigo, nombre, exposicion FROM plantas WHERE codigo = ? and exposicion = ?";
+//            this.consultas(jTextField2, jTextField3);
+//        }
     }//GEN-LAST:event_jButton1ActionPerformed
 
-    public Connection connect() {
 
-        // parámetro DB
-        String url = "jdbc:sqlite:/home/local/DANIELCASTELAO/ecollazodominguez/NetBeansProjects/SQLiteJDBC/db/Floria.db";
-        Connection conn = null;
-        // Creando conexión a la DB
-        try {
-            conn = DriverManager.getConnection(url);
-
-            System.out.println("La conexión a SQLite ha sido establecida");
-
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-        return conn;
-    }
-
-    private void actualizarTabla() {
-        //sintaxis de la consulta
-        String sql = "SELECT codigo, nombre, exposicion FROM plantas";
-        DefaultTableModel model = (DefaultTableModel) jTable2.getModel();
-        try (Connection conn = this.connect();
-                Statement stmt = conn.createStatement();
-                ResultSet rs = stmt.executeQuery(sql)) {
-            int codigo;
-            String nombre, exposicion;
-            // recorre el resultado y lo muestra
-            model.setRowCount(0);
-            while (rs.next()) {
-                codigo = rs.getInt("codigo");
-                nombre = rs.getString("nombre");
-                exposicion = rs.getString("exposicion");
-                model.addRow(new Object[]{codigo, nombre, exposicion});
-            }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-    }
-    
-    public void consultas(JTextField a,JTextField b){
-        try (Connection conn = this.connect();
-                    PreparedStatement pstmt = conn.prepareStatement(sql);
-                    ResultSet rs = pstmt.executeQuery(sql)) {
-                pstmt.setString(1, a.getText());
-                pstmt.setString(1, b.getText());
-
-                while (rs.next()) {
-                    System.out.println(rs.getInt("codigo") + "\t"
-                            + rs.getString("nombre") + "\t"
-                            + rs.getString("exposicion"));
-                }
-            } catch (SQLException e) {
-                System.out.println(e.getMessage());
-        }
-    }
 
     /**
      * @param args the command line arguments
