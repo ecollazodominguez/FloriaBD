@@ -31,6 +31,11 @@ public class Plantas {
     public int getIdExpo() {
         return idExpo;
     }
+
+    @Override
+    public String toString() {
+        return codigo + "   " + nombre+"\n";
+    }
     
     
 }

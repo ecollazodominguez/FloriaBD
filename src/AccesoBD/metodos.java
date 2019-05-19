@@ -18,12 +18,12 @@ import javax.swing.table.DefaultTableModel;
  * @author ecollazodominguez
  */
 public class metodos {
-    
+
     private static String sql;
     public static ArrayList<Plantas> pl = new ArrayList<>();
     public static ArrayList<Exposiciones> exp = new ArrayList<>();
-    
-        public static Connection connect() {
+
+    public static Connection connect() {
 
         // parámetro DB
         String url = "jdbc:sqlite:Floria.db";
@@ -54,58 +54,108 @@ public class metodos {
                 codigo = rs.getInt("codigo");
                 nombre = rs.getString("nombre");
                 idExpo = rs.getInt("idexpo");
-                pl.add(new Plantas(codigo,nombre,idExpo));
+                pl.add(new Plantas(codigo, nombre, idExpo));
             }
             return pl;
-            
+
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
         return null;
     }
-    
-    public static ArrayList<Exposiciones> añadirArrayExposiciones() {
+
+    public static ArrayList<Exposiciones> añadirArrayExposiciones(){
+        pl = añadirArrayPlantas();
         //sintaxis de la consulta
-        sql = "SELECT idexpo, exposicion FROM exposiciones where idexpo in(SELECT idexpo FROM plantas)";
+        sql = "SELECT idexpo, exposicion FROM exposiciones WHERE idexpo in(SELECT idexpo FROM plantas WHERE codigo = ?)";
         try (Connection conn = connect();
-                Statement stmt = conn.createStatement();
-                ResultSet rs = stmt.executeQuery(sql)) {
+                PreparedStatement pstmt = conn.prepareStatement(sql);) {
             int idExpo;
             String exposicion;
             exp.clear();
-            // recorre el resultado y lo muestra
-            while (rs.next()) {
-                idExpo = rs.getInt("idexpo");
-                exposicion = rs.getString("exposicion");
-                exp.add(new Exposiciones(idExpo,exposicion));
+            for (int i = 0; i < pl.size(); i++) {
+                pstmt.setInt(1,pl.get(i).getCodigo());
+                ResultSet rs = pstmt.executeQuery();
+                // recorre el resultado y lo muestra
+                while (rs.next()) {
+                    idExpo = rs.getInt("idexpo");
+                    exposicion = rs.getString("exposicion");
+                    exp.add(new Exposiciones(idExpo, exposicion));
+                    
+                }
             }
             return exp;
-            
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
-        return null;
+        return exp;
     }
-    
-    public void consultas(JTextField a,JTextField b){
-        try (Connection conn = this.connect();
-                    PreparedStatement pstmt = conn.prepareStatement(sql);
-                    ResultSet rs = pstmt.executeQuery(sql)) {
-                pstmt.setString(1, a.getText());
-                pstmt.setString(1, b.getText());
 
-                while (rs.next()) {
-                    System.out.println(rs.getInt("codigo") + "\t"
-                            + rs.getString("nombre") + "\t"
-                            + rs.getString("exposicion"));
-                }
-            } catch (SQLException e) {
-                System.out.println(e.getMessage());
+    public static void consultar(JTextField a, JTextField b, JTextField c) {
+        String sql2;
+        int codigo, idexpo;
+        String nombre, exposicion;
+        try (Connection conn = connect();) {
+            
+            PreparedStatement pstmt = null;
+            PreparedStatement pstmt2 = null;
+            
+        if (!a.getText().isEmpty() && !b.getText().isEmpty()) {
+            sql = "SELECT codigo, nombre, idexpo FROM plantas WHERE codigo = ? and nombre = ?";
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, a.getText());
+            pstmt.setString(2, b.getText());
+            
+        }else if(!a.getText().isEmpty() && !c.getText().isEmpty()){
+            sql = "SELECT codigo, nombre, idexpo FROM plantas WHERE codigo = ? and idexpo = ?";
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, a.getText());
+            pstmt.setString(2, c.getText());
+        }else if(!b.getText().isEmpty() && !c.getText().isEmpty()){
+            sql = "SELECT codigo, nombre, idexpo FROM plantas WHERE nombre = ? and idexpo = ?";
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, b.getText());
+            pstmt.setString(2, c.getText());
+        }else if(!a.getText().isEmpty()){
+            sql = "SELECT codigo, nombre, idexpo FROM plantas WHERE codigo = ? ";
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, a.getText());
+        }else if(!b.getText().isEmpty()){
+            sql = "SELECT codigo, nombre, idexpo FROM plantas WHERE nombre = ? ";
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, b.getText());
+        }else if(!c.getText().isEmpty()){
+            sql = "SELECT codigo, nombre, idexpo FROM plantas WHERE idexpo = ? ";
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, c.getText());
+            
+        }
+            ArrayList<Plantas> conp= new ArrayList<>();
+            ArrayList<Exposiciones> cone= new ArrayList<>();
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                codigo= rs.getInt("codigo");
+                nombre= rs.getString("nombre");
+                idexpo= rs.getInt("idexpo");
+                conp.add(new Plantas(codigo,nombre,idexpo));
+                
+            sql2="SELECT exposicion FROM exposiciones where idexpo = ?";
+                pstmt2 = conn.prepareStatement(sql2);
+                pstmt2.setInt(1, rs.getInt("idexpo"));
+                ResultSet rs2 = pstmt2.executeQuery();
+            while (rs2.next()){
+                exposicion= rs2.getString("exposicion");
+                 cone.add(new Exposiciones(idexpo,exposicion));
+            }
+            }
+            System.out.println("PLANTAS\n"+conp.toString()+"EXPOSICIONES\n"+cone.toString());
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
         }
     }
-    
-    public static void añadirPlantas(JTextField a, JTextField b, JTextField c){
-                //Sintaxis del insert
+
+    public static void añadirPlantas(JTextField a, JTextField b, JTextField c) {
+        //Sintaxis del insert
         String sql = "INSERT INTO PLANTAS(codigo,nombre,idexpo) VALUES(?,?,?)";
 
         //conectamos a la BD
@@ -117,35 +167,51 @@ public class metodos {
             pstmt.setInt(3, Integer.valueOf(c.getText()));
             pstmt.executeUpdate();
             JOptionPane.showMessageDialog(null, "Linea añadida"
-                                          + "\n" + a.getText()+" "+b.getText()+" "+c.getText());
+                    + "\n" + a.getText() + " " + b.getText() + " " + c.getText());
             añadirArrayPlantas();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
     }
-    
-    public static void borrarPlantas(JTextField a, JTextField b, JTextField c){
-        
-        if (a.getText() != null) {
+
+    public static void borrarPlantas(JTextField a, JTextField b, JTextField c) {
+        if (!a.getText().isEmpty()) {
             String sql = "DELETE FROM plantas WHERE codigo = ?";
 
             try (Connection conn = connect();
                     PreparedStatement pstmt = conn.prepareStatement(sql)) {
                 pstmt.setInt(1, Integer.valueOf(a.getText()));
                 pstmt.executeUpdate();
-                JOptionPane.showMessageDialog(null, "Linea borrada");
+                JOptionPane.showMessageDialog(null, "Linea borrada"
+                                            + pstmt.toString());;
                 añadirArrayPlantas();
             } catch (SQLException e) {
                 System.out.println(e.getMessage());
             }
-        } else if (b.getText() != null) {
+        } else if (!b.getText().isEmpty()) {
             String sql = "DELETE FROM plantas WHERE nombre = ?";
 
             try (Connection conn = connect();
                     PreparedStatement pstmt = conn.prepareStatement(sql)) {
-                pstmt.setString(2, b.getText());
+                pstmt.setString(1, b.getText());
                 pstmt.executeUpdate();
-                JOptionPane.showMessageDialog(null, "Linea borrada");
+                JOptionPane.showMessageDialog(null, "Linea borrada"
+                                            + pstmt.toString());
+                añadirArrayPlantas();
+
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());
+            }
+        } else if (!c.getText().isEmpty()) {
+            String sql = "DELETE FROM plantas WHERE idexpo = ?";
+
+            try (Connection conn = connect();
+                    PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                pstmt.setString(1, c.getText());
+                pstmt.executeUpdate();
+                System.out.println("Linea borrada"
+                                            + pstmt.toString());
+                
                 añadirArrayPlantas();
 
             } catch (SQLException e) {

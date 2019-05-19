@@ -14,6 +14,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
@@ -228,21 +230,13 @@ public class BaseDatos extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-
+        metodos.borrarPlantas(jTextField1, jTextField2, jTextField3);
+        actualizarTablaPlantas();
+        actualizarTablaExposiciones();
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-//        if (jTextField1.getText() != null && jTextField2.getText() != null) {
-//            sql = "SELECT codigo, nombre, exposicion FROM plantas WHERE codigo = ? and nombre = ?";
-//            this.consultas(jTextField1, jTextField2);
-//            
-//        }else if((jTextField1.getText() != null && jTextField3.getText() != null)){
-//            sql = "SELECT codigo, nombre, exposicion FROM plantas WHERE codigo = ? and exposicion = ?";
-//            this.consultas(jTextField1, jTextField3);
-//        }else if((jTextField2.getText() != null && jTextField3.getText() != null)){
-//            sql = "SELECT codigo, nombre, exposicion FROM plantas WHERE codigo = ? and exposicion = ?";
-//            this.consultas(jTextField2, jTextField3);
-//        }
+        metodos.consultar(jTextField1, jTextField2, jTextField3);
     }//GEN-LAST:event_jButton1ActionPerformed
 
     public void actualizarTablaExposiciones() {
@@ -250,7 +244,7 @@ public class BaseDatos extends javax.swing.JFrame {
         DefaultTableModel model2 = (DefaultTableModel) jTable2.getModel();
         Object O[] = null;
         model2.setRowCount(0);
-        metodos.exp = metodos.añadirArrayExposiciones();
+            metodos.exp = metodos.añadirArrayExposiciones();
         for (int j = 0; j < metodos.exp.size(); j++) {
             model2.addRow(O);
             Exposiciones getE = (Exposiciones) metodos.exp.get(j);

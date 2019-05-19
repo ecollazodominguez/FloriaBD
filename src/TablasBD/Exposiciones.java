@@ -25,6 +25,11 @@ public class Exposiciones {
     public String getExposicion() {
         return exposicion;
     }
+
+    @Override
+    public String toString() {
+        return idExpo +"  " + exposicion + "\n";
+    }
     
     
 }
