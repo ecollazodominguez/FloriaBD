@@ -6,6 +6,7 @@
 package floriabd;
 
 import AccesoBD.metodos;
+import TablasBD.Plantas;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -56,11 +57,11 @@ public class BaseDatos extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jLabel1.setText("Código:");
+        jLabel1.setText("Código");
 
-        jLabel2.setText("Nombre:");
+        jLabel2.setText("Nombre");
 
-        jLabel3.setText("Exposición:");
+        jLabel3.setText("ID exposición");
 
         jButton2.setText("Añadir");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
@@ -83,13 +84,11 @@ public class BaseDatos extends javax.swing.JFrame {
 
             },
             new String [] {
-                "Código", "Nombre", "Exposición"
+                "Código", "Nombre", "idExpo"
             }
         ));
         jScrollPane2.setViewportView(jTable2);
-        DefaultTableModel model = (DefaultTableModel) jTable2.getModel();
-        model.setRowCount(0);
-        model.addRow(metodos.actualizarTabla());
+        actualizarTabla();
 
         jTextField1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -110,33 +109,34 @@ public class BaseDatos extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addGap(28, 28, 28)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jTextField3, javax.swing.GroupLayout.DEFAULT_SIZE, 87, Short.MAX_VALUE)
+                            .addComponent(jTextField1)
+                            .addComponent(jTextField2)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(13, 13, 13)
+                                .addComponent(jLabel3)))
+                        .addGap(34, 34, 34))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGap(41, 41, 41)
-                                .addComponent(jLabel1))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGap(36, 36, 36)
-                                .addComponent(jLabel2))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGap(20, 20, 20)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jButton1)
-                                    .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, 103, Short.MAX_VALUE)
+                                    .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, 103, Short.MAX_VALUE)
+                                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGap(31, 31, 31)
-                                .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addGap(28, 28, 28)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel3)
-                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(jTextField3, javax.swing.GroupLayout.DEFAULT_SIZE, 87, Short.MAX_VALUE)
-                                .addComponent(jTextField1)
-                                .addComponent(jTextField2)))
-                        .addGap(34, 34, 34)))
+                                .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(55, 55, 55)
+                                .addComponent(jLabel1))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(50, 50, 50)
+                                .addComponent(jLabel2)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 453, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -188,22 +188,8 @@ public class BaseDatos extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextField1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-//        //Sintaxis del insert
-//        String sql = "INSERT INTO PLANTAS(codigo,nombre,exposicion) VALUES(?,?,?)";
-//
-//        //conectamos a la BD
-//        try (Connection conn = this.connect();
-//                PreparedStatement pstmt = conn.prepareStatement(sql)) {
-//            //añadimos al statement los valores por orden
-//            pstmt.setInt(1, Integer.valueOf(jTextField1.getText()));
-//            pstmt.setString(2, jTextField2.getText());
-//            pstmt.setString(3, jTextField3.getText());
-//            pstmt.executeUpdate();
-//            JOptionPane.showMessageDialog(null, "Linea añadida");
-//            this.actualizarTabla();
-//        } catch (SQLException e) {
-//            System.out.println(e.getMessage());
-//        }
+        metodos.añadirPlantas(jTextField1, jTextField2, jTextField3);
+        actualizarTabla();
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
@@ -250,7 +236,19 @@ public class BaseDatos extends javax.swing.JFrame {
 //        }
     }//GEN-LAST:event_jButton1ActionPerformed
 
-
+    public void actualizarTabla() {
+        DefaultTableModel model = (DefaultTableModel) jTable2.getModel();
+        model.setRowCount(0);
+        metodos.pl = metodos.añadirArray();
+        Object O[] = null;
+        for (int i = 0; i < metodos.pl.size(); i++) {
+            model.addRow(O);
+            Plantas getP = (Plantas) metodos.pl.get(i);
+            model.setValueAt(getP.getCodigo(), i, 0);
+            model.setValueAt(getP.getNombre(), i, 1);
+            model.setValueAt(getP.getIdExpo(), i, 2);
+        }
+    }
 
     /**
      * @param args the command line arguments

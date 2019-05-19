@@ -10,6 +10,27 @@ package TablasBD;
  * @author ecollazodominguez
  */
 public class Plantas {
-    public int codigo;
-    public String nombre;
+    private int codigo;
+    private String nombre;
+    private int idExpo;
+
+    public Plantas(int codigo, String nombre, int idExpo) {
+        this.codigo = codigo;
+        this.nombre = nombre;
+        this.idExpo = idExpo;
+    }
+
+    public int getCodigo() {
+        return codigo;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public int getIdExpo() {
+        return idExpo;
+    }
+    
+    
 }
