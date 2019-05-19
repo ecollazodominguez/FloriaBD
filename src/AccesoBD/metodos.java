@@ -5,6 +5,7 @@
  */
 package AccesoBD;
 
+import TablasBD.Exposiciones;
 import TablasBD.Plantas;
 import java.sql.*;
 import java.util.ArrayList;
@@ -20,6 +21,7 @@ public class metodos {
     
     private static String sql;
     public static ArrayList<Plantas> pl = new ArrayList<>();
+    public static ArrayList<Exposiciones> exp = new ArrayList<>();
     
         public static Connection connect() {
 
@@ -38,7 +40,7 @@ public class metodos {
         return conn;
     }
 
-    public static ArrayList<Plantas> añadirArray() {
+    public static ArrayList<Plantas> añadirArrayPlantas() {
         //sintaxis de la consulta
         sql = "SELECT codigo, nombre, idexpo FROM plantas";
         try (Connection conn = connect();
@@ -55,6 +57,29 @@ public class metodos {
                 pl.add(new Plantas(codigo,nombre,idExpo));
             }
             return pl;
+            
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return null;
+    }
+    
+    public static ArrayList<Exposiciones> añadirArrayExposiciones() {
+        //sintaxis de la consulta
+        sql = "SELECT idexpo, exposicion FROM exposiciones where idexpo in(SELECT idexpo FROM plantas)";
+        try (Connection conn = connect();
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(sql)) {
+            int idExpo;
+            String exposicion;
+            exp.clear();
+            // recorre el resultado y lo muestra
+            while (rs.next()) {
+                idExpo = rs.getInt("idexpo");
+                exposicion = rs.getString("exposicion");
+                exp.add(new Exposiciones(idExpo,exposicion));
+            }
+            return exp;
             
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -93,9 +118,39 @@ public class metodos {
             pstmt.executeUpdate();
             JOptionPane.showMessageDialog(null, "Linea añadida"
                                           + "\n" + a.getText()+" "+b.getText()+" "+c.getText());
-            añadirArray();
+            añadirArrayPlantas();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
+        }
+    }
+    
+    public static void borrarPlantas(JTextField a, JTextField b, JTextField c){
+        
+        if (a.getText() != null) {
+            String sql = "DELETE FROM plantas WHERE codigo = ?";
+
+            try (Connection conn = connect();
+                    PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                pstmt.setInt(1, Integer.valueOf(a.getText()));
+                pstmt.executeUpdate();
+                JOptionPane.showMessageDialog(null, "Linea borrada");
+                añadirArrayPlantas();
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());
+            }
+        } else if (b.getText() != null) {
+            String sql = "DELETE FROM plantas WHERE nombre = ?";
+
+            try (Connection conn = connect();
+                    PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                pstmt.setString(2, b.getText());
+                pstmt.executeUpdate();
+                JOptionPane.showMessageDialog(null, "Linea borrada");
+                añadirArrayPlantas();
+
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());
+            }
         }
     }
 }
