@@ -34,7 +34,7 @@ public class Plantas {
 
     @Override
     public String toString() {
-        return codigo + "   " + nombre+"\n";
+        return codigo + "   " + nombre+ "   "+ idExpo+"\n";
     }
     
     
