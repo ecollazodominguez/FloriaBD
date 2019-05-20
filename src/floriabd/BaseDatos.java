@@ -6,10 +6,16 @@
 package floriabd;
 
 import AccesoBD.metodos;
+import Excepciones.NumeroMayorExcepcion;
+import Excepciones.ValorVacioExcepcion;
 import TablasBD.Exposiciones;
 import TablasBD.Plantas;
+import java.io.File;
 import java.sql.*;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -26,22 +32,31 @@ public class BaseDatos extends javax.swing.JFrame {
     public BaseDatos() {
         initComponents();
     }
-    
+
     public BaseDatos(String filename) {
-        String url = "jdbc:sqlite:"+filename+".db";
- 
+        String url = "jdbc:sqlite:" + filename + ".db";
+             File file = new File(filename + ".db");
+        if (file.exists() == false){
         try (Connection conn = DriverManager.getConnection(url)) {
-            if (conn != null) {
+            if (conn != null ) {
                 DatabaseMetaData meta = conn.getMetaData();
                 System.out.println("The driver name is " + meta.getDriverName());
                 System.out.println("Una nueva DB ha sido creada");
+                metodos.crearTablas(filename);
+
             }
- 
-        } catch (SQLException e) {
+        }catch (SQLException e) {
             System.out.println(e.getMessage());
         }
-        metodos.crearTablas(filename);
-                initComponents();
+
+        }
+        try {
+            Connection conn = DriverManager.getConnection(url);
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+        }
+        System.out.println("La conexión a SQLite ha sido establecida");
+        initComponents();
     }
 
     /**
@@ -261,20 +276,30 @@ public class BaseDatos extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextField1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        metodos.añadirPlantas(jTextField1, jTextField2, jTextField3);
+        try {
+            metodos.añadirPlantas(jTextField1, jTextField2, jTextField3);
+        } catch (ValorVacioExcepcion ex) {
+            JOptionPane.showMessageDialog(null, ex.getMessage());
+        } catch (NumeroMayorExcepcion ex1) {
+            JOptionPane.showMessageDialog(null, ex1.getMessage());
+        }
         actualizarTablaPlantas();
         actualizarTablaExposiciones();
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        metodos.borrarPlantas(jTextField1, jTextField2, jTextField3);
+        try {
+            metodos.borrarPlantas(jTextField1, jTextField2, jTextField3);
+        } catch (ValorVacioExcepcion ex) {
+            JOptionPane.showMessageDialog(null, ex.getMessage());
+        }
         actualizarTablaPlantas();
         actualizarTablaExposiciones();
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         ArrayList<Plantas> conp = new ArrayList<>();
-        conp= metodos.consultar(jTextField1, jTextField2, jTextField3);
+        conp = metodos.consultar(jTextField1, jTextField2, jTextField3);
         actuConsultaPlantas(conp);
         actuConsultaExpo(conp);
     }//GEN-LAST:event_jButton1ActionPerformed
@@ -285,17 +310,21 @@ public class BaseDatos extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton7ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-    System.exit(0);
+        System.exit(0);
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
-     metodos.modificarLinea(jTextField1,jTextField2,jTextField3);
-      actualizarTablaPlantas();
+        try {
+            metodos.modificarLinea(jTextField1, jTextField2, jTextField3);
+        } catch (NumeroMayorExcepcion ex) {
+            JOptionPane.showMessageDialog(null, ex.getMessage());
+        }
+        actualizarTablaPlantas();
         actualizarTablaExposiciones();
     }//GEN-LAST:event_jButton5ActionPerformed
 
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
-     metodos.crearTablas("Floria");
+        metodos.crearTablas("Floria");
     }//GEN-LAST:event_jButton6ActionPerformed
 
     public void actualizarTablaExposiciones() {
@@ -303,7 +332,7 @@ public class BaseDatos extends javax.swing.JFrame {
         DefaultTableModel model2 = (DefaultTableModel) jTable2.getModel();
         Object O[] = null;
         model2.setRowCount(0);
-            metodos.exp = metodos.añadirArrayExposiciones();
+        metodos.exp = metodos.añadirArrayExposiciones();
         for (int j = 0; j < metodos.exp.size(); j++) {
             model2.addRow(O);
             Exposiciones getE = (Exposiciones) metodos.exp.get(j);
@@ -326,8 +355,8 @@ public class BaseDatos extends javax.swing.JFrame {
             model.setValueAt(getP.getIdExpo(), i, 2);
         }
     }
-    
-        public void actuConsultaPlantas(ArrayList<Plantas> conp) {
+
+    public void actuConsultaPlantas(ArrayList<Plantas> conp) {
         //PLANTAS
         DefaultTableModel model = (DefaultTableModel) jTable3.getModel();
         Object O[] = null;
@@ -338,14 +367,15 @@ public class BaseDatos extends javax.swing.JFrame {
             model.setValueAt(getP.getCodigo(), i, 0);
             model.setValueAt(getP.getNombre(), i, 1);
             model.setValueAt(getP.getIdExpo(), i, 2);
-        }   
+        }
     }
+
     public void actuConsultaExpo(ArrayList<Plantas> conp) {
         //EXPOSICIONES
         DefaultTableModel model2 = (DefaultTableModel) jTable2.getModel();
         Object O[] = null;
         model2.setRowCount(0);
-            metodos.exp = metodos.añadirArrayExpoConsulta(conp);
+        metodos.exp = metodos.añadirArrayExpoConsulta(conp);
         for (int j = 0; j < metodos.exp.size(); j++) {
             model2.addRow(O);
             Exposiciones getE = (Exposiciones) metodos.exp.get(j);

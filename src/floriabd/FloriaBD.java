@@ -18,15 +18,13 @@ public class FloriaBD {
      */
     public static void main(String[] args) {
         BaseDatos flor = new BaseDatos("Floria");
-        JOptionPane.showConfirmDialog(null, "¿Conectar a la Base de datos?");
+        int opcion = JOptionPane.showConfirmDialog(null, "¿Conectar a la Base de datos?", "FloriaDB", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+        if(opcion == JOptionPane.YES_OPTION){
         flor.setVisible(true);
         flor.setDefaultCloseOperation(3);
-
-
-
-    
-
-
+        }else{
+        System.exit(0);
+        }
     }
 
     

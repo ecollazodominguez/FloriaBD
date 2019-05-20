@@ -5,12 +5,13 @@
  */
 package AccesoBD;
 
+import Excepciones.NumeroMayorExcepcion;
+import Excepciones.ValorVacioExcepcion;
 import TablasBD.Exposiciones;
 import TablasBD.Plantas;
 import java.sql.*;
 import java.util.ArrayList;
 import javax.swing.*;
-
 
 /**
  *
@@ -30,8 +31,6 @@ public class metodos {
         // Creando conexión a la DB
         try {
             conn = DriverManager.getConnection(url);
-
-            System.out.println("La conexión a SQLite ha sido establecida");
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -89,7 +88,7 @@ public class metodos {
         }
         return exp;
     }
-    
+
     public static ArrayList<Exposiciones> añadirArrayExpoConsulta(ArrayList<Plantas> conp) {
         //sintaxis de la consulta
         sql = "SELECT idexpo, exposicion FROM exposiciones WHERE idexpo in(SELECT idexpo FROM plantas WHERE codigo = ?)";
@@ -169,10 +168,16 @@ public class metodos {
         return null;
     }
 
-    public static void añadirPlantas(JTextField a, JTextField b, JTextField c) {
+    public static void añadirPlantas(JTextField a, JTextField b, JTextField c) throws ValorVacioExcepcion, NumeroMayorExcepcion {
         //Sintaxis del insert
-         sql = "INSERT INTO PLANTAS(codigo,nombre,idexpo) VALUES(?,?,?)";
 
+        if (a.getText().isEmpty() || b.getText().isEmpty() || c.getText().isEmpty()) {
+            throw new ValorVacioExcepcion("Todos los campos tienen que tener un valor");
+        }
+        if (Integer.valueOf(c.getText()) > 3) {
+            throw new NumeroMayorExcepcion("La ID de exposición no puede ser mayor de 3");
+        }
+        sql = "INSERT INTO PLANTAS(codigo,nombre,idexpo) VALUES(?,?,?)";
         //conectamos a la BD
         try (Connection conn = connect();
                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -189,27 +194,40 @@ public class metodos {
         }
     }
 
-    public static void borrarPlantas(JTextField a, JTextField b, JTextField c) {
+    public static void borrarPlantas(JTextField a, JTextField b, JTextField c) throws ValorVacioExcepcion {
         if (!a.getText().isEmpty()) {
             sql = "DELETE FROM plantas WHERE codigo = ?";
-
+            String sql2 = "Select count(codigo) from plantas where codigo = ?";
             try (Connection conn = connect();
-                    PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                    PreparedStatement pstmt = conn.prepareStatement(sql);
+                    PreparedStatement pstmt2 = conn.prepareStatement(sql2)) {
+                pstmt2.setInt(1, Integer.valueOf(a.getText()));
+                ResultSet rs = pstmt2.executeQuery();
                 pstmt.setInt(1, Integer.valueOf(a.getText()));
                 pstmt.executeUpdate();
-                JOptionPane.showMessageDialog(null, "Linea borrada\n");
+                if (rs.getInt(1) == 0) {
+                    throw new ValorVacioExcepcion("No hay lineas para borrar");
+                }
+                JOptionPane.showMessageDialog(null, rs.getString(1) + "linea(s) borrada(s)\n");
                 añadirArrayPlantas();
             } catch (SQLException e) {
                 System.out.println(e.getMessage());
             }
         } else if (!b.getText().isEmpty()) {
-             sql = "DELETE FROM plantas WHERE nombre = ?";
+            sql = "DELETE FROM plantas WHERE nombre = ?";
+            String sql2 = "Select count(nombre) from plantas where nombre = ?";
 
             try (Connection conn = connect();
-                    PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                    PreparedStatement pstmt = conn.prepareStatement(sql);
+                    PreparedStatement pstmt2 = conn.prepareStatement(sql2)) {
+                pstmt2.setString(1, b.getText());
+                ResultSet rs = pstmt2.executeQuery();
                 pstmt.setString(1, b.getText());
                 pstmt.executeUpdate();
-                JOptionPane.showMessageDialog(null, "Linea borrada\n");
+                if (rs.getInt(1) == 0) {
+                    throw new ValorVacioExcepcion("No hay lineas para borrar");
+                }
+                JOptionPane.showMessageDialog(null, rs.getString(1) + "linea(s) borrada(s)\n");
                 añadirArrayPlantas();
 
             } catch (SQLException e) {
@@ -217,12 +235,19 @@ public class metodos {
             }
         } else if (!c.getText().isEmpty()) {
             sql = "DELETE FROM plantas WHERE idexpo = ?";
+            String sql2 = "Select count(idexpo) from plantas where idexpo = ?";
 
             try (Connection conn = connect();
-                    PreparedStatement pstmt = conn.prepareStatement(sql)) {
-                pstmt.setString(1, c.getText());
+                    PreparedStatement pstmt = conn.prepareStatement(sql);
+                    PreparedStatement pstmt2 = conn.prepareStatement(sql2)) {
+                pstmt2.setInt(1, Integer.valueOf(c.getText()));
+                ResultSet rs = pstmt2.executeQuery();
+                pstmt.setInt(1, Integer.valueOf(c.getText()));
                 pstmt.executeUpdate();
-                JOptionPane.showMessageDialog(null, "Linea borrada\n");
+                if (rs.getInt(1) == 0) {
+                    throw new ValorVacioExcepcion("No hay lineas para borrar");
+                }
+                JOptionPane.showMessageDialog(null, rs.getString(1) + " linea(s) borrada(s)\n");
 
                 añadirArrayPlantas();
 
@@ -231,95 +256,100 @@ public class metodos {
             }
         }
     }
-    public static void modificarLinea(JTextField a, JTextField b, JTextField c) {
-       
-        try (Connection conn = connect();){
-        PreparedStatement pstmt = null;
+
+    public static void modificarLinea(JTextField a, JTextField b, JTextField c) throws NumeroMayorExcepcion {
+
+        try (Connection conn = connect();) {
+            PreparedStatement pstmt = null;
 
             if (!b.getText().isEmpty() && !c.getText().isEmpty()) {
-        sql = "UPDATE plantas SET nombre = ? , "
-                + "idexpo = ? "
-                + "WHERE codigo = ?"; 
-        pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1, b.getText());
-            pstmt.setInt(2, Integer.valueOf(c.getText()));
-            pstmt.setInt(3, Integer.valueOf(a.getText()));
-            }else if(!b.getText().isEmpty()){
+                sql = "UPDATE plantas SET nombre = ? , "
+                        + "idexpo = ? "
+                        + "WHERE codigo = ?";
+                pstmt = conn.prepareStatement(sql);
+                pstmt.setString(1, b.getText());
+                if (Integer.valueOf(c.getText()) > 3) {
+                    throw new NumeroMayorExcepcion("La ID de exposición no puede ser mayor de 3");
+                }
+                pstmt.setInt(2, Integer.valueOf(c.getText()));
+                pstmt.setInt(3, Integer.valueOf(a.getText()));
+            } else if (!b.getText().isEmpty()) {
                 sql = "UPDATE plantas SET nombre = ? "
-                + "WHERE codigo = ?"; 
+                        + "WHERE codigo = ?";
                 pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1, b.getText());
-            pstmt.setInt(2, Integer.valueOf(a.getText()));
-            }else if(!c.getText().isEmpty()){
+                pstmt.setString(1, b.getText());
+                pstmt.setInt(2, Integer.valueOf(a.getText()));
+            } else if (!c.getText().isEmpty()) {
                 sql = "UPDATE plantas SET idexpo = ? "
-                + "WHERE codigo = ?"; 
+                        + "WHERE codigo = ?";
                 pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1, c.getText());
-            pstmt.setInt(2, Integer.valueOf(a.getText()));
+                if (Integer.valueOf(c.getText()) > 3) {
+                    throw new NumeroMayorExcepcion("La ID de exposición no puede ser mayor de 3");
+                }
+                pstmt.setString(1, c.getText());
+                pstmt.setInt(2, Integer.valueOf(a.getText()));
             }
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
     }
-    
-    public static void crearTablas(String filename){
+
+    public static void crearTablas(String filename) {
 //         SQLite connection string
-String url = "jdbc:sqlite:"+filename+".db";
-        
+        String url = "jdbc:sqlite:" + filename + ".db";
+
         // Para crear una tabla usamos esta sintaxis
-         sql = "CREATE TABLE IF NOT EXISTS Exposiciones (\n"
+        sql = "CREATE TABLE IF NOT EXISTS Exposiciones (\n"
                 + "	idexpo integer PRIMARY KEY,\n"
                 + "	exposicion text NOT NULL\n"
                 + ");";
-        
+
         // Conectamos a la DB
         try (Connection conn = DriverManager.getConnection(url);
-         // Creamos un "Statement" que cogerá la sintaxis sql
+                // Creamos un "Statement" que cogerá la sintaxis sql
                 Statement stmt = conn.createStatement()) {
             // Creamos la tabla
             stmt.execute(sql);
         } catch (SQLException e) {
-            System.out.println(e.getMessage()+"1");
+            System.out.println(e.getMessage() + "1");
         }
-    
-        
-        
-         // SQLite connection string
- url = "jdbc:sqlite:"+filename+".db";
-        
+
+        // SQLite connection string
+        url = "jdbc:sqlite:" + filename + ".db";
+
         // Para crear una tabla usamos esta sintaxis
-         sql = "CREATE TABLE IF NOT EXISTS Plantas (\n"
+        sql = "CREATE TABLE IF NOT EXISTS Plantas (\n"
                 + "	codigo integer PRIMARY KEY,\n"
-                + "	nombre text NOT NULL,\n"
+                + "	nombre text NOT NULL UNIQUE,\n"
                 + "	idexpo integer,\n"
                 + " FOREIGN KEY (idexpo) REFERENCES Exposiciones(idexpo)\n"
                 + ");";
-        
+
         // Conectamos a la DB
         try (Connection conn = DriverManager.getConnection(url);
-         // Creamos un "Statement" que cogerá la sintaxis sql
+                // Creamos un "Statement" que cogerá la sintaxis sql
                 Statement stmt = conn.createStatement()) {
             // Creamos la tabla
             stmt.execute(sql);
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
-        
-    insertarLineaExpo(1,"Sol");
-    insertarLineaExpo(2,"Semisombra");
-    insertarLineaExpo(3,"Sombra");
-    insertarLineaPlantas(1,"Malus domestica",2);
-    insertarLineaPlantas(2,"Echeveria elegans",1);
-    insertarLineaPlantas(5,"Camelia japonica",3);
-    insertarLineaPlantas(7,"Prunus avium",2);
-    
+
+        insertarLineaExpo(1, "Sol");
+        insertarLineaExpo(2, "Semisombra");
+        insertarLineaExpo(3, "Sombra");
+        insertarLineaPlantas(1, "Malus domestica", 2);
+        insertarLineaPlantas(2, "Echeveria elegans", 1);
+        insertarLineaPlantas(5, "Camelia japonica", 3);
+        insertarLineaPlantas(7, "Prunus avium", 2);
+
     }
-    
+
     public static void insertarLineaExpo(int idexpo, String exposicion) {
- //Sintaxis del insert
+        //Sintaxis del insert
         sql = "INSERT INTO Exposiciones(idexpo,exposicion) VALUES(?,?)";
-        
+
         //conectamos a la BD
         try (Connection conn = connect();
                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -330,11 +360,12 @@ String url = "jdbc:sqlite:"+filename+".db";
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
-}
-        public static void insertarLineaPlantas(int codigo, String nombre, int idExpo) {
- //Sintaxis del insert
+    }
+
+    public static void insertarLineaPlantas(int codigo, String nombre, int idExpo) {
+        //Sintaxis del insert
         sql = "INSERT INTO Plantas(codigo,nombre,idexpo) VALUES(?,?,?)";
-        
+
         //conectamos a la BD
         try (Connection conn = connect();
                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -346,8 +377,6 @@ String url = "jdbc:sqlite:"+filename+".db";
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
-}
-        
     }
 
-
+}
