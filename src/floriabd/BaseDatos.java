@@ -5,7 +5,7 @@
  */
 package floriabd;
 
-import AccesoBD.metodos;
+import AccesoBD.Manipulacion;
 import Excepciones.NumeroMayorExcepcion;
 import Excepciones.ValorVacioExcepcion;
 import TablasBD.Exposiciones;
@@ -42,7 +42,7 @@ public class BaseDatos extends javax.swing.JFrame {
                 DatabaseMetaData meta = conn.getMetaData();
                 System.out.println("The driver name is " + meta.getDriverName());
                 System.out.println("Una nueva DB ha sido creada");
-                metodos.crearTablas(filename);
+                Manipulacion.crearTablas(filename,jTable2,jTable3);
 
             }
         }catch (SQLException e) {
@@ -125,7 +125,7 @@ public class BaseDatos extends javax.swing.JFrame {
             }
         ));
         jScrollPane2.setViewportView(jTable2);
-        actualizarTablaExposiciones();
+        Manipulacion.actualizarTablaExposiciones(jTable2);
 
         jTextField1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -163,7 +163,7 @@ public class BaseDatos extends javax.swing.JFrame {
             }
         ));
         jScrollPane3.setViewportView(jTable3);
-        actualizarTablaPlantas();
+        Manipulacion.actualizarTablaPlantas(jTable3);
 
         jButton7.setText("Refrescar");
         jButton7.addActionListener(new java.awt.event.ActionListener() {
@@ -239,19 +239,16 @@ public class BaseDatos extends javax.swing.JFrame {
                         .addComponent(jButton1))
                     .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 259, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 259, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(18, 18, 18)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jButton4)
-                            .addComponent(jButton6)
-                            .addComponent(jButton3)))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(18, 18, 18)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jButton5)
-                            .addComponent(jButton2)
-                            .addComponent(jButton7))))
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jButton4)
+                        .addComponent(jButton6)
+                        .addComponent(jButton3))
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jButton5)
+                        .addComponent(jButton2)
+                        .addComponent(jButton7)))
                 .addGap(411, 411, 411))
         );
 
@@ -277,36 +274,34 @@ public class BaseDatos extends javax.swing.JFrame {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         try {
-            metodos.añadirPlantas(jTextField1, jTextField2, jTextField3);
-        } catch (ValorVacioExcepcion ex) {
+            Manipulacion.añadirPlantas(jTextField1, jTextField2, jTextField3);
+        } catch (ValorVacioExcepcion | NumeroMayorExcepcion ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage());
-        } catch (NumeroMayorExcepcion ex1) {
-            JOptionPane.showMessageDialog(null, ex1.getMessage());
         }
-        actualizarTablaPlantas();
-        actualizarTablaExposiciones();
+        Manipulacion.actualizarTablaPlantas(jTable3);
+        Manipulacion.actualizarTablaExposiciones(jTable2);
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         try {
-            metodos.borrarPlantas(jTextField1, jTextField2, jTextField3);
+            Manipulacion.borrarPlantas(jTextField1, jTextField2, jTextField3);
         } catch (ValorVacioExcepcion ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage());
         }
-        actualizarTablaPlantas();
-        actualizarTablaExposiciones();
+        Manipulacion.actualizarTablaPlantas(jTable3);
+        Manipulacion.actualizarTablaExposiciones(jTable2);
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         ArrayList<Plantas> conp = new ArrayList<>();
-        conp = metodos.consultar(jTextField1, jTextField2, jTextField3);
-        actuConsultaPlantas(conp);
-        actuConsultaExpo(conp);
+        conp = Manipulacion.consultar(jTextField1, jTextField2, jTextField3);
+        Manipulacion.actuConsultaPlantas(conp,jTable3);
+        Manipulacion.actuConsultaExpo(conp,jTable2);
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
-        actualizarTablaPlantas();
-        actualizarTablaExposiciones();
+        Manipulacion.actualizarTablaPlantas(jTable3);
+        Manipulacion.actualizarTablaExposiciones(jTable2);
     }//GEN-LAST:event_jButton7ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
@@ -315,74 +310,21 @@ public class BaseDatos extends javax.swing.JFrame {
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
         try {
-            metodos.modificarLinea(jTextField1, jTextField2, jTextField3);
-        } catch (NumeroMayorExcepcion ex) {
+            Manipulacion.modificarLinea(jTextField1, jTextField2, jTextField3);
+        } catch (NumeroMayorExcepcion | ValorVacioExcepcion ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage());
+        } catch (NullPointerException e) {
+            JOptionPane.showMessageDialog(null, "Introduzca un campo en Código Y Nombre o ID exposición que desea modificar.");
         }
-        actualizarTablaPlantas();
-        actualizarTablaExposiciones();
+        Manipulacion.actualizarTablaPlantas(jTable3);
+        Manipulacion.actualizarTablaExposiciones(jTable2);
     }//GEN-LAST:event_jButton5ActionPerformed
 
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
-        metodos.crearTablas("Floria");
+        Manipulacion.crearTablas("Floria",jTable2,jTable3);
     }//GEN-LAST:event_jButton6ActionPerformed
 
-    public void actualizarTablaExposiciones() {
-        //EXPOSICIONES
-        DefaultTableModel model2 = (DefaultTableModel) jTable2.getModel();
-        Object O[] = null;
-        model2.setRowCount(0);
-        metodos.exp = metodos.añadirArrayExposiciones();
-        for (int j = 0; j < metodos.exp.size(); j++) {
-            model2.addRow(O);
-            Exposiciones getE = (Exposiciones) metodos.exp.get(j);
-            model2.setValueAt(getE.getIdExpo(), j, 0);
-            model2.setValueAt(getE.getExposicion(), j, 1);
-        }
-    }
 
-    public void actualizarTablaPlantas() {
-        //PLANTAS
-        DefaultTableModel model = (DefaultTableModel) jTable3.getModel();
-        Object O[] = null;
-        model.setRowCount(0);
-        metodos.pl = metodos.añadirArrayPlantas();
-        for (int i = 0; i < metodos.pl.size(); i++) {
-            model.addRow(O);
-            Plantas getP = (Plantas) metodos.pl.get(i);
-            model.setValueAt(getP.getCodigo(), i, 0);
-            model.setValueAt(getP.getNombre(), i, 1);
-            model.setValueAt(getP.getIdExpo(), i, 2);
-        }
-    }
-
-    public void actuConsultaPlantas(ArrayList<Plantas> conp) {
-        //PLANTAS
-        DefaultTableModel model = (DefaultTableModel) jTable3.getModel();
-        Object O[] = null;
-        model.setRowCount(0);
-        for (int i = 0; i < conp.size(); i++) {
-            model.addRow(O);
-            Plantas getP = (Plantas) conp.get(i);
-            model.setValueAt(getP.getCodigo(), i, 0);
-            model.setValueAt(getP.getNombre(), i, 1);
-            model.setValueAt(getP.getIdExpo(), i, 2);
-        }
-    }
-
-    public void actuConsultaExpo(ArrayList<Plantas> conp) {
-        //EXPOSICIONES
-        DefaultTableModel model2 = (DefaultTableModel) jTable2.getModel();
-        Object O[] = null;
-        model2.setRowCount(0);
-        metodos.exp = metodos.añadirArrayExpoConsulta(conp);
-        for (int j = 0; j < metodos.exp.size(); j++) {
-            model2.addRow(O);
-            Exposiciones getE = (Exposiciones) metodos.exp.get(j);
-            model2.setValueAt(getE.getIdExpo(), j, 0);
-            model2.setValueAt(getE.getExposicion(), j, 1);
-        }
-    }
 
     /**
      * @param args the command line arguments

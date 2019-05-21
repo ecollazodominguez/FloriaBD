@@ -12,12 +12,13 @@ import TablasBD.Plantas;
 import java.sql.*;
 import java.util.ArrayList;
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
  * @author ecollazodominguez
  */
-public class metodos {
+public class Manipulacion {
 
     private static String sql;
     public static ArrayList<Plantas> pl = new ArrayList<>();
@@ -257,10 +258,15 @@ public class metodos {
         }
     }
 
-    public static void modificarLinea(JTextField a, JTextField b, JTextField c) throws NumeroMayorExcepcion {
+    public static void modificarLinea(JTextField a, JTextField b, JTextField c) throws NumeroMayorExcepcion, ValorVacioExcepcion {
 
         try (Connection conn = connect();) {
             PreparedStatement pstmt = null;
+            if (b.getText().isEmpty() && c.getText().isEmpty()){
+                throw new NullPointerException();
+            }else if(a.getText().isEmpty()){
+                throw new ValorVacioExcepcion("Introduzca un código para modificar la linea.");
+            }
 
             if (!b.getText().isEmpty() && !c.getText().isEmpty()) {
                 sql = "UPDATE plantas SET nombre = ? , "
@@ -295,7 +301,7 @@ public class metodos {
         }
     }
 
-    public static void crearTablas(String filename) {
+    public static void crearTablas(String filename,JTable a,JTable b) {
 //         SQLite connection string
         String url = "jdbc:sqlite:" + filename + ".db";
 
@@ -343,6 +349,8 @@ public class metodos {
         insertarLineaPlantas(2, "Echeveria elegans", 1);
         insertarLineaPlantas(5, "Camelia japonica", 3);
         insertarLineaPlantas(7, "Prunus avium", 2);
+        actualizarTablaExposiciones(a);
+        actualizarTablaPlantas(b);
 
     }
 
@@ -358,7 +366,7 @@ public class metodos {
             pstmt.setString(2, exposicion);
             pstmt.executeUpdate();
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            System.out.println("La linea ya existe se añadirá la siguiente si existe.");
         }
     }
 
@@ -375,7 +383,64 @@ public class metodos {
             pstmt.setInt(3, idExpo);
             pstmt.executeUpdate();
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            System.out.println("La linea ya existe se añadirá la siguiente si existe.");
+        }
+    }
+    
+        public static void actuConsultaExpo(ArrayList<Plantas> conp, JTable a) {
+        //EXPOSICIONES
+        DefaultTableModel model2 = (DefaultTableModel) a.getModel();
+        Object O[] = null;
+        model2.setRowCount(0);
+        Manipulacion.exp = Manipulacion.añadirArrayExpoConsulta(conp);
+        for (int j = 0; j < Manipulacion.exp.size(); j++) {
+            model2.addRow(O);
+            Exposiciones getE = (Exposiciones) Manipulacion.exp.get(j);
+            model2.setValueAt(getE.getIdExpo(), j, 0);
+            model2.setValueAt(getE.getExposicion(), j, 1);
+        }
+    }
+        
+        public static void actuConsultaPlantas(ArrayList<Plantas> conp, JTable a) {
+        //PLANTAS
+        DefaultTableModel model = (DefaultTableModel) a.getModel();
+        Object O[] = null;
+        model.setRowCount(0);
+        for (int i = 0; i < conp.size(); i++) {
+            model.addRow(O);
+            Plantas getP = (Plantas) conp.get(i);
+            model.setValueAt(getP.getCodigo(), i, 0);
+            model.setValueAt(getP.getNombre(), i, 1);
+            model.setValueAt(getP.getIdExpo(), i, 2);
+        }
+    }
+            
+        public static void actualizarTablaPlantas(JTable a) {
+        //PLANTAS
+        DefaultTableModel model = (DefaultTableModel) a.getModel();
+        Object O[] = null;
+        model.setRowCount(0);
+        Manipulacion.pl = Manipulacion.añadirArrayPlantas();
+        for (int i = 0; i < Manipulacion.pl.size(); i++) {
+            model.addRow(O);
+            Plantas getP = (Plantas) Manipulacion.pl.get(i);
+            model.setValueAt(getP.getCodigo(), i, 0);
+            model.setValueAt(getP.getNombre(), i, 1);
+            model.setValueAt(getP.getIdExpo(), i, 2);
+        }
+    }
+        
+        public static void actualizarTablaExposiciones(JTable a) {
+        //EXPOSICIONES
+        DefaultTableModel model2 = (DefaultTableModel) a.getModel();
+        Object O[] = null;
+        model2.setRowCount(0);
+        Manipulacion.exp = Manipulacion.añadirArrayExposiciones();
+        for (int j = 0; j < Manipulacion.exp.size(); j++) {
+            model2.addRow(O);
+            Exposiciones getE = (Exposiciones) Manipulacion.exp.get(j);
+            model2.setValueAt(getE.getIdExpo(), j, 0);
+            model2.setValueAt(getE.getExposicion(), j, 1);
         }
     }
 
