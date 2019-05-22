@@ -194,7 +194,7 @@
                 </Property>
               </Properties>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_allCodePost" type="java.lang.String" value="AccesoBD.Manipulacion.actualizarTablaExposiciones(jTable2);"/>
+                <AuxValue name="JavaCodeGenerator_allCodePost" type="java.lang.String" value="Conexion.actualizarTablaExposiciones(jTable2);"/>
               </AuxValues>
             </Component>
           </SubComponents>
@@ -250,7 +250,7 @@
                 </Property>
               </Properties>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_allCodePost" type="java.lang.String" value="AccesoBD.Manipulacion.actualizarTablaPlantas(jTable3);"/>
+                <AuxValue name="JavaCodeGenerator_allCodePost" type="java.lang.String" value="Conexion.actualizarTablaPlantas(jTable3);"/>
               </AuxValues>
             </Component>
           </SubComponents>

@@ -19,9 +19,21 @@ import javax.swing.table.DefaultTableModel;
 public class Conexion {
 
     private static String sql;
+
+    /**
+     * Array Plantas que usaremos para visualizar la tabla
+     */
     public static ArrayList<Plantas> pl = new ArrayList<>();
+
+    /**
+     *Array Exposiciones que usaremos para visualizar la tabla
+     */
     public static ArrayList<Exposiciones> exp = new ArrayList<>();
 
+    /**
+     * Método para conectar a la database
+     * @return devuelve el objeto Connection
+     */
     public static Connection connect() {
 
         // parámetro BD
@@ -37,6 +49,10 @@ public class Conexion {
         return conn;
     }
 
+    /**
+     *Método para poner en un Array Plantas toda la tabla de Plantas
+     * @return ArrayPlantas con la tabla entera
+     */
     public static ArrayList<Plantas> añadirArrayPlantas() {
         //sintaxis de la consulta
         sql = "SELECT codigo, nombre, idexpo FROM plantas";
@@ -61,6 +77,11 @@ public class Conexion {
         return null;
     }
 
+    /**
+     *Método para poner en un Array Exposiciones los valores relacionados
+     * con cada linea de la tabla Plantas y mostrar la tabla exposiciones relacionada con Plantas
+     * @return Arrayexposiciones con la tabla relacionada
+     */
     public static ArrayList<Exposiciones> añadirArrayExposiciones() {
         pl = añadirArrayPlantas();
         //sintaxis de la consulta
@@ -89,6 +110,12 @@ public class Conexion {
         return exp;
     }
 
+    /**
+     * Método que crea la Tabla Plantas y Exposiciones añadiendo un número de lineas
+     * @param filename Nombre de la base de datos
+     * @param a Primera tabla(plantas)
+     * @param b Segunda tabla(exposiciones)
+     */
     public static void crearTablas(String filename, JTable a, JTable b) {
         //Sintaxis para la conexión
         String url = "jdbc:sqlite:" + filename + ".db";
@@ -133,6 +160,11 @@ public class Conexion {
 
     }
 
+    /**
+     *Método para actualizar la Tabla Exposiciones de la interfaz y te muestre los datos de la consulta
+     * @param conp ArrayPlantas con los resultados de la consulta
+     * @param a La tabla Exposiciones de la interfaz
+     */
     public static void actuConsultaExpo(ArrayList<Plantas> conp, JTable a) {
         //EXPOSICIONES
         DefaultTableModel model2 = (DefaultTableModel) a.getModel();
@@ -147,6 +179,11 @@ public class Conexion {
         }
     }
 
+    /**
+     *Método para actualizar la Tabla Plantas de la interfaz y te muestre los datos de la consulta
+     * @param conp ArrayPlantas con los resultados de la consulta
+     * @param a La tabla Plantas de la interfaz
+     */
     public static void actuConsultaPlantas(ArrayList<Plantas> conp, JTable a) {
         //PLANTAS
         DefaultTableModel model = (DefaultTableModel) a.getModel();
@@ -161,6 +198,10 @@ public class Conexion {
         }
     }
 
+    /**
+     *Método que usando un Array mostramos los datos de la Tabla Plantas
+     * @param a La tabla Plantas de la interfaz
+     */
     public static void actualizarTablaPlantas(JTable a) {
         //PLANTAS
         DefaultTableModel model = (DefaultTableModel) a.getModel();
@@ -176,6 +217,10 @@ public class Conexion {
         }
     }
 
+    /**
+     *Método que usando un Array mostramos los datos de la Tabla Exposiciones
+     * @param a La tabla Exposiciones de la interfaz
+     */
     public static void actualizarTablaExposiciones(JTable a) {
         //EXPOSICIONES
         DefaultTableModel model2 = (DefaultTableModel) a.getModel();

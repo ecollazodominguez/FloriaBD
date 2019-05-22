@@ -10,6 +10,7 @@ package TablasBD;
  * @author ecollazodominguez
  */
 public class Plantas {
+
     private int codigo;
     private String nombre;
     private int idExpo;
@@ -34,8 +35,7 @@ public class Plantas {
 
     @Override
     public String toString() {
-        return codigo + "   " + nombre+ "   "+ idExpo+"\n";
+        return codigo + "   " + nombre + "   " + idExpo + "\n";
     }
-    
-    
+
 }

@@ -21,6 +21,12 @@ public class Manipulacion {
 
     private static String sql;
 
+    /**
+     *  Metodo que crea un Array de Exposiciones a partir de un Array de Plantas
+     * para recoger el resultado de una consulta
+     * @param conp ArrayList de Plantas que usaremos para hacer la consulta
+     * @return Devuelve el Array Exposiciones
+     */
     public static ArrayList<Exposiciones> añadirArrayExpoConsulta(ArrayList<Plantas> conp) {
         //sintaxis de la consulta
         sql = "SELECT idexpo, exposicion FROM exposiciones WHERE idexpo in(SELECT idexpo FROM plantas WHERE codigo = ?)";
@@ -47,6 +53,14 @@ public class Manipulacion {
         return Conexion.exp;
     }
 
+    /**
+     *Método para consultar en la tabla Plantas a través de los campos de la
+     * interfaz metiendo el resultado en un Array Plantas
+     * @param a Primer campo(Codigo)
+     * @param b Segundo campo(Nombre)
+     * @param c Tercer campo(IdExpo)
+     * @return Array Plantas con los resultados de la consulta
+     */
     public static ArrayList<Plantas> consultar(JTextField a, JTextField b, JTextField c) {
         int codigo, idexpo;
         String nombre, exposicion;
@@ -87,12 +101,14 @@ public class Manipulacion {
             ArrayList<Plantas> conp = new ArrayList<>();
             ArrayList<Exposiciones> cone = new ArrayList<>();
             ResultSet rs = pstmt.executeQuery();
+            
             while (rs.next()) {
                 codigo = rs.getInt("codigo");
                 nombre = rs.getString("nombre");
                 idexpo = rs.getInt("idexpo");
                 conp.add(new Plantas(codigo, nombre, idexpo));
             }
+            
             return conp;
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -100,6 +116,15 @@ public class Manipulacion {
         return null;
     }
 
+    /**
+     *Método para añadir en la tabla Plantas a través de los campos de la interfaz,
+     * necesario rellenar todos los campos.
+     * @param a Primer campo(Codigo)
+     * @param b Segundo campo(Nombre)
+     * @param c Tercer campo(IdExpo)
+     * @throws ValorVacioExcepcion Envía error si alguno de los campos está vacío
+     * @throws NumeroMayorExcepcion Envía error si la ID de exposición es mayor que 3
+     */
     public static void añadirPlantas(JTextField a, JTextField b, JTextField c) throws ValorVacioExcepcion, NumeroMayorExcepcion {
         //Sintaxis del insert
 
@@ -126,6 +151,14 @@ public class Manipulacion {
         }
     }
 
+    /**
+     *Método para borrar en la tabla Plantas a través de los campos de la interfaz,
+     * Solo borra con un valor en un campo.
+     * @param a Primer campo(Codigo)
+     * @param b Segundo campo(Nombre)
+     * @param c Tercer campo(Idexpo)
+     * @throws ValorVacioExcepcion Envía error si el resultado está vacío
+     */
     public static void borrarPlantas(JTextField a, JTextField b, JTextField c) throws ValorVacioExcepcion {
         if (!a.getText().isEmpty()) {
             sql = "DELETE FROM plantas WHERE codigo = ?";
@@ -140,7 +173,7 @@ public class Manipulacion {
                 if (rs.getInt(1) == 0) {
                     throw new ValorVacioExcepcion("No hay lineas para borrar");
                 }
-                JOptionPane.showMessageDialog(null, rs.getString(1) + "linea(s) borrada(s)\n");
+                JOptionPane.showMessageDialog(null, rs.getString(1) + " linea(s) borrada(s)\n");
                 Conexion.añadirArrayPlantas();
             } catch (SQLException e) {
                 System.out.println(e.getMessage());
@@ -189,6 +222,15 @@ public class Manipulacion {
         }
     }
 
+    /**
+     *Método para modificar en la tabla Plantas a través de los campos de la interfaz,
+     * necesario código en el campo de la interfaz para realizar la modificación
+     * @param a Primer campo(Codigo)
+     * @param b Segundo campo(Nombre)
+     * @param c Tercer campo(Idexpo)
+     * @throws NumeroMayorExcepcion Envía error si la ID de exposición es mayor que 3
+     * @throws ValorVacioExcepcion Envía error si no se ha puesto un código
+     */
     public static void modificarLinea(JTextField a, JTextField b, JTextField c) throws NumeroMayorExcepcion, ValorVacioExcepcion {
 
         try (Connection conn = Conexion.connect();) {
@@ -197,7 +239,7 @@ public class Manipulacion {
                 throw new NullPointerException();
             } else if (a.getText().isEmpty()) {
                 throw new ValorVacioExcepcion("Introduzca un código para modificar la linea.");
-            }
+            } 
 
             if (!b.getText().isEmpty() && !c.getText().isEmpty()) {
                 sql = "UPDATE plantas SET nombre = ? , "
@@ -232,6 +274,11 @@ public class Manipulacion {
         }
     }
 
+    /**
+     * Inserta una linea en la tabla Exposiciones
+     * @param idexpo Primer valor de la tabla, ID de la exposición
+     * @param exposicion Segundo valor de la tabla, tipo de exposición
+     */
     public static void insertarLineaExpo(int idexpo, String exposicion) {
         //Sintaxis del insert
         sql = "INSERT INTO Exposiciones(idexpo,exposicion) VALUES(?,?)";
@@ -248,6 +295,12 @@ public class Manipulacion {
         }
     }
 
+    /**
+     * Inserta una linea en la tabla Plantas
+     * @param codigo Primer valor de la tabla, código de la planta
+     * @param nombre Segundo valor de la tabla, nombre de la planta
+     * @param idExpo Tercer valor de la tabla, ID de la exposición
+     */
     public static void insertarLineaPlantas(int codigo, String nombre, int idExpo) {
         //Sintaxis del insert
         sql = "INSERT INTO Plantas(codigo,nombre,idexpo) VALUES(?,?,?)";

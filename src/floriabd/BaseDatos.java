@@ -5,10 +5,10 @@
  */
 package floriabd;
 
-import AccesoBD.Manipulacion;
+
+import AccesoBD.*;
 import Excepciones.NumeroMayorExcepcion;
 import Excepciones.ValorVacioExcepcion;
-import TablasBD.Exposiciones;
 import TablasBD.Plantas;
 import java.io.File;
 import java.sql.*;
@@ -16,7 +16,6 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
-import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -26,9 +25,6 @@ public class BaseDatos extends javax.swing.JFrame {
 
     String sql;
 
-    /**
-     * Creates new form BaseDatos
-     */
     public BaseDatos() {
         initComponents();
     }
@@ -42,7 +38,7 @@ public class BaseDatos extends javax.swing.JFrame {
                 DatabaseMetaData meta = conn.getMetaData();
                 System.out.println("The driver name is " + meta.getDriverName());
                 System.out.println("Una nueva DB ha sido creada");
-                Manipulacion.crearTablas(filename,jTable2,jTable3);
+                Conexion.crearTablas(filename,jTable2,jTable3);
 
             }
         }catch (SQLException e) {
@@ -56,7 +52,7 @@ public class BaseDatos extends javax.swing.JFrame {
             System.out.println(ex.getMessage());
         }
         System.out.println("La conexión a SQLite ha sido establecida");
-        initComponents();
+                initComponents();
     }
 
     /**
@@ -125,7 +121,7 @@ public class BaseDatos extends javax.swing.JFrame {
             }
         ));
         jScrollPane2.setViewportView(jTable2);
-        Manipulacion.actualizarTablaExposiciones(jTable2);
+        Conexion.actualizarTablaExposiciones(jTable2);
 
         jTextField1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -163,7 +159,7 @@ public class BaseDatos extends javax.swing.JFrame {
             }
         ));
         jScrollPane3.setViewportView(jTable3);
-        Manipulacion.actualizarTablaPlantas(jTable3);
+        Conexion.actualizarTablaPlantas(jTable3);
 
         jButton7.setText("Refrescar");
         jButton7.addActionListener(new java.awt.event.ActionListener() {
@@ -278,8 +274,8 @@ public class BaseDatos extends javax.swing.JFrame {
         } catch (ValorVacioExcepcion | NumeroMayorExcepcion ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage());
         }
-        Manipulacion.actualizarTablaPlantas(jTable3);
-        Manipulacion.actualizarTablaExposiciones(jTable2);
+        Conexion.actualizarTablaPlantas(jTable3);
+        Conexion.actualizarTablaExposiciones(jTable2);
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
@@ -288,23 +284,29 @@ public class BaseDatos extends javax.swing.JFrame {
         } catch (ValorVacioExcepcion ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage());
         }
-        Manipulacion.actualizarTablaPlantas(jTable3);
-        Manipulacion.actualizarTablaExposiciones(jTable2);
+        Conexion.actualizarTablaPlantas(jTable3);
+        Conexion.actualizarTablaExposiciones(jTable2);
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         ArrayList<Plantas> conp = new ArrayList<>();
         conp = Manipulacion.consultar(jTextField1, jTextField2, jTextField3);
-        Manipulacion.actuConsultaPlantas(conp,jTable3);
-        Manipulacion.actuConsultaExpo(conp,jTable2);
+        Conexion.actuConsultaPlantas(conp,jTable3);
+        Conexion.actuConsultaExpo(conp,jTable2);
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
-        Manipulacion.actualizarTablaPlantas(jTable3);
-        Manipulacion.actualizarTablaExposiciones(jTable2);
+        Conexion.actualizarTablaPlantas(jTable3);
+        Conexion.actualizarTablaExposiciones(jTable2);
     }//GEN-LAST:event_jButton7ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        Connection conn = Conexion.connect();
+        try {
+            conn.close();
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+        }
         System.exit(0);
     }//GEN-LAST:event_jButton4ActionPerformed
 
@@ -316,12 +318,12 @@ public class BaseDatos extends javax.swing.JFrame {
         } catch (NullPointerException e) {
             JOptionPane.showMessageDialog(null, "Introduzca un campo en Código Y Nombre o ID exposición que desea modificar.");
         }
-        Manipulacion.actualizarTablaPlantas(jTable3);
-        Manipulacion.actualizarTablaExposiciones(jTable2);
+        Conexion.actualizarTablaPlantas(jTable3);
+        Conexion.actualizarTablaExposiciones(jTable2);
     }//GEN-LAST:event_jButton5ActionPerformed
 
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
-        Manipulacion.crearTablas("Floria",jTable2,jTable3);
+        Conexion.crearTablas("Floria",jTable2,jTable3);
     }//GEN-LAST:event_jButton6ActionPerformed
 
 

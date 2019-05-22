@@ -10,6 +10,7 @@ package TablasBD;
  * @author Mirroriced
  */
 public class Exposiciones {
+
     private int idExpo;
     private String exposicion;
 
@@ -28,8 +29,7 @@ public class Exposiciones {
 
     @Override
     public String toString() {
-        return idExpo +"  " + exposicion + "\n";
+        return idExpo + "  " + exposicion + "\n";
     }
-    
-    
+
 }
