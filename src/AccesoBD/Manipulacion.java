@@ -20,6 +20,7 @@ import javax.swing.*;
 public class Manipulacion {
 
     private static String sql;
+    private static boolean correcto = true;
 
     /**
      *  Metodo que crea un Array de Exposiciones a partir de un Array de Plantas
@@ -125,13 +126,15 @@ public class Manipulacion {
      * @throws ValorVacioExcepcion Envía error si alguno de los campos está vacío
      * @throws NumeroMayorExcepcion Envía error si la ID de exposición es mayor que 3
      */
-    public static void añadirPlantas(JTextField a, JTextField b, JTextField c) throws ValorVacioExcepcion, NumeroMayorExcepcion {
+    public static String añadirPlantas(JTextField a, JTextField b, JTextField c) throws ValorVacioExcepcion, NumeroMayorExcepcion {
         //Sintaxis del insert
 
         if (a.getText().isEmpty() || b.getText().isEmpty() || c.getText().isEmpty()) {
-            throw new ValorVacioExcepcion("Todos los campos tienen que tener un valor");
+            correcto = false;
+            throw new ValorVacioExcepcion("Todos los campos tienen que tener un valor");      
         }
         if (Integer.valueOf(c.getText()) > 3) {
+            correcto = false;
             throw new NumeroMayorExcepcion("La ID de exposición no puede ser mayor de 3");
         }
         sql = "INSERT INTO PLANTAS(codigo,nombre,idexpo) VALUES(?,?,?)";
@@ -143,12 +146,13 @@ public class Manipulacion {
             pstmt.setString(2, b.getText());
             pstmt.setInt(3, Integer.valueOf(c.getText()));
             pstmt.executeUpdate();
-            JOptionPane.showMessageDialog(null, "Linea añadida"
-                    + "\n" + a.getText() + " " + b.getText() + " " + c.getText());
             Conexion.añadirArrayPlantas();
+            return "Linea añadida"
+                    + "\n" + a.getText() + " " + b.getText() + " " + c.getText();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
+        return "Ha habido un error";
     }
 
     /**
@@ -159,7 +163,7 @@ public class Manipulacion {
      * @param c Tercer campo(Idexpo)
      * @throws ValorVacioExcepcion Envía error si el resultado está vacío
      */
-    public static void borrarPlantas(JTextField a, JTextField b, JTextField c) throws ValorVacioExcepcion {
+    public static String borrarPlantas(JTextField a, JTextField b, JTextField c) throws ValorVacioExcepcion {
         if (!a.getText().isEmpty()) {
             sql = "DELETE FROM plantas WHERE codigo = ?";
             String sql2 = "Select count(codigo) from plantas where codigo = ?";
@@ -173,8 +177,8 @@ public class Manipulacion {
                 if (rs.getInt(1) == 0) {
                     throw new ValorVacioExcepcion("No hay lineas para borrar");
                 }
-                JOptionPane.showMessageDialog(null, rs.getString(1) + " linea(s) borrada(s)\n");
                 Conexion.añadirArrayPlantas();
+                return rs.getString(1) + " linea(s) borrada(s)\n";
             } catch (SQLException e) {
                 System.out.println(e.getMessage());
             }
@@ -192,8 +196,8 @@ public class Manipulacion {
                 if (rs.getInt(1) == 0) {
                     throw new ValorVacioExcepcion("No hay lineas para borrar");
                 }
-                JOptionPane.showMessageDialog(null, rs.getString(1) + "linea(s) borrada(s)\n");
                 Conexion.añadirArrayPlantas();
+                return rs.getString(1) + "linea(s) borrada(s)\n";
 
             } catch (SQLException e) {
                 System.out.println(e.getMessage());
@@ -212,14 +216,15 @@ public class Manipulacion {
                 if (rs.getInt(1) == 0) {
                     throw new ValorVacioExcepcion("No hay lineas para borrar");
                 }
-                JOptionPane.showMessageDialog(null, rs.getString(1) + " linea(s) borrada(s)\n");
 
                 Conexion.añadirArrayPlantas();
+                return rs.getString(1) + " linea(s) borrada(s)\n";
 
             } catch (SQLException e) {
                 System.out.println(e.getMessage());
             }
         }
+            return "No se ha borrado nada";
     }
 
     /**
@@ -231,13 +236,15 @@ public class Manipulacion {
      * @throws NumeroMayorExcepcion Envía error si la ID de exposición es mayor que 3
      * @throws ValorVacioExcepcion Envía error si no se ha puesto un código
      */
-    public static void modificarLinea(JTextField a, JTextField b, JTextField c) throws NumeroMayorExcepcion, ValorVacioExcepcion {
+    public static String modificarLinea(JTextField a, JTextField b, JTextField c) throws NumeroMayorExcepcion, ValorVacioExcepcion {
 
         try (Connection conn = Conexion.connect();) {
             PreparedStatement pstmt = null;
             if (b.getText().isEmpty() && c.getText().isEmpty()) {
+                correcto = false;
                 throw new NullPointerException();
             } else if (a.getText().isEmpty()) {
+                correcto = false;
                 throw new ValorVacioExcepcion("Introduzca un código para modificar la linea.");
             } 
 
@@ -268,10 +275,11 @@ public class Manipulacion {
                 pstmt.setString(1, c.getText());
                 pstmt.setInt(2, Integer.valueOf(a.getText()));
             }
-            pstmt.executeUpdate();
+            return String.valueOf(pstmt.executeUpdate())+" linea modificada";
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
+        return "Linea modificada";
     }
 
     /**

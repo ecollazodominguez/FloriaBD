@@ -270,7 +270,7 @@ public class BaseDatos extends javax.swing.JFrame {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         try {
-            Manipulacion.añadirPlantas(jTextField1, jTextField2, jTextField3);
+            JOptionPane.showMessageDialog(null, Manipulacion.añadirPlantas(jTextField1, jTextField2, jTextField3));
         } catch (ValorVacioExcepcion | NumeroMayorExcepcion ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage());
         }
@@ -280,7 +280,7 @@ public class BaseDatos extends javax.swing.JFrame {
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         try {
-            Manipulacion.borrarPlantas(jTextField1, jTextField2, jTextField3);
+            JOptionPane.showMessageDialog(null,Manipulacion.borrarPlantas(jTextField1, jTextField2, jTextField3));
         } catch (ValorVacioExcepcion ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage());
         }
@@ -312,7 +312,7 @@ public class BaseDatos extends javax.swing.JFrame {
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
         try {
-            Manipulacion.modificarLinea(jTextField1, jTextField2, jTextField3);
+            JOptionPane.showMessageDialog(null, Manipulacion.modificarLinea(jTextField1, jTextField2, jTextField3));
         } catch (NumeroMayorExcepcion | ValorVacioExcepcion ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage());
         } catch (NullPointerException e) {
