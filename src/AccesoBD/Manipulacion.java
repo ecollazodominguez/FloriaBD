@@ -146,7 +146,6 @@ public class Manipulacion {
             pstmt.setString(2, b.getText());
             pstmt.setInt(3, Integer.valueOf(c.getText()));
             pstmt.executeUpdate();
-            Conexion.añadirArrayPlantas();
             return "Linea añadida"
                     + "\n" + a.getText() + " " + b.getText() + " " + c.getText();
         } catch (SQLException e) {
@@ -177,7 +176,6 @@ public class Manipulacion {
                 if (rs.getInt(1) == 0) {
                     throw new ValorVacioExcepcion("No hay lineas para borrar");
                 }
-                Conexion.añadirArrayPlantas();
                 return rs.getString(1) + " linea(s) borrada(s)\n";
             } catch (SQLException e) {
                 System.out.println(e.getMessage());
@@ -196,7 +194,6 @@ public class Manipulacion {
                 if (rs.getInt(1) == 0) {
                     throw new ValorVacioExcepcion("No hay lineas para borrar");
                 }
-                Conexion.añadirArrayPlantas();
                 return rs.getString(1) + "linea(s) borrada(s)\n";
 
             } catch (SQLException e) {
@@ -217,7 +214,6 @@ public class Manipulacion {
                     throw new ValorVacioExcepcion("No hay lineas para borrar");
                 }
 
-                Conexion.añadirArrayPlantas();
                 return rs.getString(1) + " linea(s) borrada(s)\n";
 
             } catch (SQLException e) {
