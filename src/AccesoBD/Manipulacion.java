@@ -100,7 +100,6 @@ public class Manipulacion {
 
             }
             ArrayList<Plantas> conp = new ArrayList<>();
-            ArrayList<Exposiciones> cone = new ArrayList<>();
             ResultSet rs = pstmt.executeQuery();
             
             while (rs.next()) {
