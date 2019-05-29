@@ -152,7 +152,7 @@ public class Manipulacion {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
-        return "Ha habido un error";
+        return "El código o el nombre ya existen";
     }
 
     /**
@@ -275,7 +275,7 @@ public class Manipulacion {
                 pstmt.setString(1, c.getText());
                 pstmt.setInt(2, Integer.valueOf(a.getText()));
             }
-            return String.valueOf(pstmt.executeUpdate())+" linea modificada";
+            return String.valueOf(pstmt.executeUpdate())+" linea(s) modificada(s)";
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
